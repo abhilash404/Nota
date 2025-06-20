@@ -9,5 +9,8 @@ pub struct Cli{
 
 #[derive(Subcommand, Debug)]
 pub enum Args{
-  Same,
+  Same{
+    #[arg()]
+    input: Option<String>,
+  }
 }
