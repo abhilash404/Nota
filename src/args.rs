@@ -9,14 +9,5 @@ pub struct Cli{
 
 #[derive(Subcommand, Debug)]
 pub enum Args{
-  Shout{
-    name: String,
-  },
-
-  Bhag,
-
-  Square {
-    a: i32,
-    b: i32,
-  },
+  Same,
 }
