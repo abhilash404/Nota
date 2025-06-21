@@ -3,22 +3,25 @@ use std::fs::File;
 use std::io::{BufReader,Read};
 use walkdir::WalkDir;
 use std::collections::HashMap;
+use std::path::Path;
+use xxhash_rust::xxh3::Xxh3;
 
-/*pub fn same(path1: &String, path2: &String) -> bool{
+pub struct file{
+  path: String,
+  hash: String,
+  value: i32
+}
 
-  let mut hash1: String= hashed(path1);
-  let mut hash2: String= hashed(path2);
-
-  if hash1 == hash2{
-    true
-  }else{
-    false
+pub fn print_path(entries: &Vec<file>){
+  for ele in entries{
+    if ele.value > 1{
+      println!("{}",ele.path);
+    }
   }
-}*/
+}
+pub fn same(path: &String) -> (bool, Vec<file>){
 
-pub fn same(path: &String) -> bool{
-
-  let mut hashed: HashMap<String,i32> = HashMap::new();
+  let mut hashed: Vec<file> = Vec::new();
   let mut flag: bool = true;
 
   for entry in WalkDir::new(path){
@@ -27,30 +30,53 @@ pub fn same(path: &String) -> bool{
     let path = entry.path();
 
     if path.is_file(){
-      let mut hash: String = hashing(&path.to_string_lossy().to_string());
-      if let Some(val) = hashed.get_mut(&hash){
-        flag = false;
-        *val += 1;
-      }else{
-        hashed.insert(hash.clone(),1);
+      let mut hash: String = hashing(path);
+
+      let mut f: bool= false;
+      for ele in &mut hashed{
+        if ele.hash == hash{
+          f = true;
+          flag = false;
+          ele.value += 1;
+        }
+      }
+      if !f{
+        hashed.push(file{
+          path: path.to_string_lossy().to_string(),
+          hash: hash,
+          value: 1
+        })
       }
     }else{
       continue;
     }
   }
+  (flag,hashed)
+}
 
-  for (key,value) in &hashed{
-    if *value > 1{
-      println!("{}",key);
-    }
-  }
-  flag
+fn hashing(path: &Path) -> String{
+  let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("").to_lowercase();
+  let path_str = path.to_string_lossy();
+
+  let hash = match ext.as_str() {
+    "pdf" | "docx" | "txt" => {
+      hashing_sha(&path_str)
+    },
+    "mp4" | "png" | "jpg" | "exe" | "bin" => {
+      hashing_blake3(&path_str)
+    },
+    "log" | "tmp" | "bak" => {
+      hashing_xxhash(&path_str)
+    },
+    _ => {
+        unreachable!()
+    },
+  };
+  hash
 }
 
 
-
-
-fn hashing(path: &String) -> String{
+fn hashing_sha(path: &str) -> String{
   let file = File::open(path).unwrap();
 
   let mut reader = BufReader::new(file);
@@ -67,6 +93,34 @@ fn hashing(path: &String) -> String{
   }
 
   let result = hasher.finalize();
-  //Ok(format!("{:x}", result));
   format!("{:x}", result)
+}
+
+fn hashing_blake3(path: &str) -> String{
+  let file = File::open(path).expect("Could not open file");
+    let mut reader = BufReader::new(file);
+    let mut hasher = blake3::Hasher::new();
+    let mut buffer = [0; 1024];
+
+    while let Ok(n) = reader.read(&mut buffer) {
+        if n == 0 { break; }
+        hasher.update(&buffer[..n]);
+    }
+
+    hasher.finalize().to_hex().to_string()
+
+}
+
+fn hashing_xxhash(path: &str) -> String{
+  let file = File::open(path).expect("Could not open file");
+    let mut reader = BufReader::new(file);
+    let mut hasher = Xxh3::new();
+    let mut buffer = [0; 1024];
+
+    while let Ok(n) = reader.read(&mut buffer) {
+        if n == 0 { break; }
+        hasher.update(&buffer[..n]);
+    }
+
+    format!("{:x}", hasher.digest())
 }

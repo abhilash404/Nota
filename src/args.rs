@@ -13,4 +13,4 @@ pub enum Args{
     #[arg()]
     input: Option<String>,
   }
-}
+} 

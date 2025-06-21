@@ -15,18 +15,24 @@ fn main() {
                 None => {
                     let current_dir = env::current_dir().unwrap();
                     let f1 = current_dir.to_string_lossy().to_string();
-                    //let f2 = r"E:\test\f2.txt".to_string();
-                    if hash::same(&f1){
+
+                    let (flag, entries) = hash::same(&f1);
+                    
+                    if flag{
                         println!("No duplicates in the file");                       
                     }else{
-                        println!("there are duplicate files in the directory given.\n the hash of those are:\n");
+                        println!("there are duplicate files in the directory given.\n the paths of those are given above:\n");
+                        hash::print_path(&entries);
                     }
                 },
                 Some(name) => {
-                    if hash::same(&name){
+                    let (flag, entries) = hash::same(&name);
+
+                    if flag{
                         println!("No duplicates in the file");
                     }else{
-                        println!("there are duplicate files in the directory given.\n the hash of those are given above:\n");
+                        println!("there are duplicate files in the directory given.\n the paths of those are given below:\n");
+                        hash::print_path(&entries);
                     }
                 },
             }
