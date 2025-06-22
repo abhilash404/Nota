@@ -12,5 +12,11 @@ pub enum Args{
   Same{
     #[arg()]
     input: Option<String>,
+    #[arg(short = 'f', long = "f")]
+    filtered: bool,
   }
+
+  
 } 
+
+
