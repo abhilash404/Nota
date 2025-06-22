@@ -12,11 +12,11 @@ pub enum Args{
   Same{
     #[arg()]
     input: Option<String>,
-    #[arg(short = 'f', long = "f")]
-    filtered: bool,
+    #[arg(short = 'f', long = "f", conflicts_with = "quarantine")]
+    filter: bool,
+    #[arg(short = 'q', long = "q", conflicts_with = "filter")]
+    quarantine: bool,  
   }
-
-  
 } 
 
 
