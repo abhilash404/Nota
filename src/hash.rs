@@ -1,27 +1,27 @@
 use sha2::{Sha256, Digest};
-use std::fs::File;
+use std::fs::File as Fs;
 use std::io::{BufReader,Read};
 use walkdir::WalkDir;
 use std::collections::HashMap;
 use std::path::Path;
 use xxhash_rust::xxh3::Xxh3;
 
-pub struct file{
-  path: String,
-  hash: String,
-  value: i32
+pub struct File{
+  pub path: String,
+  pub hash: String,
+  pub value: i32
 }
 
-pub fn print_path(entries: &Vec<file>){
+pub fn print_path(entries: &Vec<File>){
   for ele in entries{
     if ele.value > 1{
       println!("{}",ele.path);
     }
   }
 }
-pub fn same(path: &String) -> (bool, Vec<file>){
+pub fn same(path: &String) -> (bool, Vec<File>){
 
-  let mut hashed: Vec<file> = Vec::new();
+  let mut hashed: Vec<File> = Vec::new();
   let mut flag: bool = true;
 
   for entry in WalkDir::new(path){
@@ -41,7 +41,7 @@ pub fn same(path: &String) -> (bool, Vec<file>){
         }
       }
       if !f{
-        hashed.push(file{
+        hashed.push(File{
           path: path.to_string_lossy().to_string(),
           hash: hash,
           value: 1
@@ -77,7 +77,7 @@ fn hashing(path: &Path) -> String{
 
 
 fn hashing_sha(path: &str) -> String{
-  let file = File::open(path).unwrap();
+  let file = Fs::open(path).unwrap();
 
   let mut reader = BufReader::new(file);
   let mut hasher = Sha256::new();
@@ -97,7 +97,7 @@ fn hashing_sha(path: &str) -> String{
 }
 
 fn hashing_blake3(path: &str) -> String{
-  let file = File::open(path).expect("Could not open file");
+  let file = Fs::open(path).expect("Could not open file");
     let mut reader = BufReader::new(file);
     let mut hasher = blake3::Hasher::new();
     let mut buffer = [0; 1024];
@@ -112,7 +112,7 @@ fn hashing_blake3(path: &str) -> String{
 }
 
 fn hashing_xxhash(path: &str) -> String{
-  let file = File::open(path).expect("Could not open file");
+  let file = Fs::open(path).expect("Could not open file");
     let mut reader = BufReader::new(file);
     let mut hasher = Xxh3::new();
     let mut buffer = [0; 1024];

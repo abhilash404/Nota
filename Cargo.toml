@@ -9,3 +9,4 @@ sha2 = "0.10"
 walkdir = "2.4"
 blake3 = "1.5"
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
+tempfile = "3.10"
