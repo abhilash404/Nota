@@ -47,7 +47,7 @@ fn process_path(path: &String) -> Vec<File>{
         println!("No duplicates in the file");
     } else {
         println!(
-            "There are {} duplicate files in the directory given.\nThe paths of those are:\n",
+            "There are {} unique files in the directory given.\nThe paths of those are:\n",
             entries.len()
         );
         hash::print_path(&entries);

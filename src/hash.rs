@@ -14,9 +14,7 @@ pub struct File{
 
 pub fn print_path(entries: &Vec<File>){
   for ele in entries{
-    if ele.value > 1{
-      println!("{}",ele.path);
-    }
+    println!("{}",ele.path);
   }
 }
 pub fn same(path: &String) -> (bool, Vec<File>){
