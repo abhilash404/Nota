@@ -23,13 +23,14 @@ fn main() {
                 },
                 (true, false) =>{
                     let entries= process_path(&path);
-                    filter::filter(&entries, &path);
+                    let q_path = filter::qurantine(&entries, &path);
+                    filter::filter(&q_path);
                 },
                 (false, true) => {
-                    let entires = process_path(&path);
-                    filter::qurantine(&entires, &path);
+                    let entries = process_path(&path);
+                    let q_path = filter::qurantine(&entries, &path);
                     println!("the above file have been quarentined.");
-                    decide(&entires, &path);
+                    decide(&q_path);
                 }
                 (false,false) => {
                     let entries= process_path(&path);
@@ -54,32 +55,18 @@ fn process_path(path: &String) -> Vec<File>{
     entries
 }
 
-fn decide(entries: &Vec<File>, path: &String){
+fn decide(q_path: &String){
     println!("do you want to filter them out? [Y/N]");
     let mut decision = String::new();
-    io::stdin().read_line(&mut decision);
+    io::stdin().read_line(&mut decision).unwrap();
     let decision = decision.trim();
 
     match decision{
-        "Y"|"y" => filter::filter(&entries, &path),
+        "Y"|"y" => filter::filter(&q_path),
         "N"|"n" => println!("Thank you"),
         _ => {
             println!("invalid input.");
-            decide(&entries, &path);
+            decide(&q_path);
         }
     }
 }
-
-
-// fn process_input(input: Option<String>) -> Vec<file>{
-//     match input {
-//         None => {
-//             let f1 = env::current_dir().unwrap().to_string_lossy().to_string();
-//             let entries = process_path(&f1);
-//         },
-//         Some(name) => {
-//             let entries = process_path(&name),
-//         }
-//     }
-//     entries
-// }

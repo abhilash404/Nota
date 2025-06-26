@@ -1,5 +1,3 @@
-
-
 use tempfile::TempDir;
 use std::path::Path;
 use std::io;
@@ -8,16 +6,14 @@ use crate::hash::File;
 
 
 
-pub fn filter(hashed: &Vec<File>, path: &String){
+pub fn filter(q_path: &String){
 
+  fs::remove_dir_all(q_path).unwrap();
+  println!("your files have been filtered out✅");
   
-  // for ele in hashed{
-  //   println!("{}",ele.hash)
-  // }
-  println!("filtered")
 }
 
-pub fn qurantine(hashed: &Vec<File>, path: &String){
+pub fn qurantine(hashed: &Vec<File>, path: &String) -> String{
 
   let q_path = Path::new(path).join("quarantine");
   fs::create_dir_all(&q_path).unwrap();
@@ -29,4 +25,6 @@ pub fn qurantine(hashed: &Vec<File>, path: &String){
     fs::rename(&og_path,&new_path).unwrap();
 
   }
+
+  q_path.to_string_lossy().to_string()
 }
