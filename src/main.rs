@@ -6,6 +6,7 @@ use std::env;
 use args::{Cli,Args};
 use clap::Parser;
 use hash::File;
+use std::io;
 
 fn main() {
     let cli = Cli::parse();
@@ -22,10 +23,13 @@ fn main() {
                 },
                 (true, false) =>{
                     let entries= process_path(&path);
-                    filter::filter(entries);
+                    filter::filter(&entries, &path);
                 },
                 (false, true) => {
-                    filter::qurantine();
+                    let entires = process_path(&path);
+                    filter::qurantine(&entires, &path);
+                    println!("the above file have been quarentined.");
+                    decide(&entires, &path);
                 }
                 (false,false) => {
                     let entries= process_path(&path);
@@ -49,6 +53,23 @@ fn process_path(path: &String) -> Vec<File>{
     }
     entries
 }
+
+fn decide(entries: &Vec<File>, path: &String){
+    println!("do you want to filter them out? [Y/N]");
+    let mut decision = String::new();
+    io::stdin().read_line(&mut decision);
+    let decision = decision.trim();
+
+    match decision{
+        "Y"|"y" => filter::filter(&entries, &path),
+        "N"|"n" => println!("Thank you"),
+        _ => {
+            println!("invalid input.");
+            decide(&entries, &path);
+        }
+    }
+}
+
 
 // fn process_input(input: Option<String>) -> Vec<file>{
 //     match input {
