@@ -94,7 +94,7 @@ nota same E:/test -q
 
 - **Scan, quarantine, and then filter (delete) duplicates:**
 ```
-nota same E:/test -q -f
+nota same E:/test -f
 ```
 
 **Note:** Using both `-q` and `-f` together is not allowed.
